@@ -1,0 +1,14 @@
+services:
+  mc-server:
+    build:
+      args:
+        - JAVA_VERSION=${JAVA_VERSION}
+        - UNAME=${USER}
+        - GNAME=${USER}
+    stdin_open: true
+    env_file: .env
+    volumes:
+      - ./out:/home/${USER}/
+    tty: true
+    ports:
+      - "25565:25565"
