@@ -1,7 +1,15 @@
 import json
+import logging
 import sys
 import time
 import requests
+
+# Configure logging to output to stdout (the console in GitHub Actions)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
 
 MOJANG_MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
 
@@ -18,7 +26,7 @@ def getJson(url: str) -> dict[str, any]:
     response = requests.get(url=url, timeout=120)
 
     if response.status_code != 200:
-        print(f"Error: Failed to fetch data from {url}")
+        logging.error(f"Error: Failed to fetch data from {url}")
         sys.exit(1)
 
     return response.json()
@@ -102,6 +110,15 @@ def getMissingEntries(items: dict[str, str]) -> dict[str, any]:
         metadata = fetchRequiredMetaData(url)
         if len(metadata.keys()) == 2:
             result[version] = metadata
+    
+    # Logging purposes.
+    if len(result) > 0:
+        logging.info("Missing Entries List:")
+        for version, metadata in result.items():
+            itemUrl = metadata["url"]
+            javaVersion = metadata["javaVersion"]
+            logging.info(f"Version: {version} with URL '{itemUrl}' requiring minimum Java {javaVersion}")
+
     return result
 
 def main() -> None:
