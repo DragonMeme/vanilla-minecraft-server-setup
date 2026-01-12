@@ -1,19 +1,29 @@
 .ONESHELL:
 SHELL := /bin/bash
-RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-$(eval $(RUN_ARGS):;@:)
 
-MCVERSION := $(firstword $(RUN_ARGS))
+# Commands where rest of the args is treated as one argument.
+CMDS_ALL_ARGS_IS_ONE_LIST = find setup-env server new-server
+FIRST_ARG = $(firstword $(MAKECMDGOALS))
+ifeq ($(FIRST_ARG),$(filter $(FIRST_ARG),$(CMDS_ALL_ARGS_IS_ONE_LIST)))
+  # use the rest as arguments to supply the cmds.
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RUN_ARGS):;@:)
+endif
+
 IMAGE_NAME = minecraft.vanilla.server
 IMAGES := $(shell docker images --filter "reference=$(IMAGE_NAME):*" -q | tr '\n' ' ')
 
-.SILENT: setup-env out-clean
+.SILENT: setup-env out-clean find
+
+find:
+	./scripts/find_versions.sh "$(RUN_ARGS)"
 
 agree-eula:
 	echo "eula=TRUE" > out/eula.txt
 
 setup-env:
-	./scripts/setup_mc_env.sh -img $(IMAGE_NAME) -mcv $(MCVERSION)
+	./scripts/setup_mc_env.sh -img $(IMAGE_NAME) -mcv "$(RUN_ARGS)"
 
 up:
 	docker compose up -d && docker compose attach mc-server
@@ -25,13 +35,13 @@ down:
 out-clean:
 	mv out/.gitignore .gitignore.out
 	if [[ -f "out/eula.txt" ]]; then
-		mv out/eula.txt eula.out.txt
+		mv out/eula.txt eula.out
 	fi
 	rm -rf out/
 	mkdir out
 	mv .gitignore.out out/.gitignore
-	if [[ -f eula.out.txt ]]; then
-		mv eula.out.txt out/eula.txt
+	if [[ -f eula.out ]]; then
+		mv eula.out out/eula.txt
 	fi
 
 image-clean:

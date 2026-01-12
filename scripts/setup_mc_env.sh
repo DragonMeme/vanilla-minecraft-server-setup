@@ -47,5 +47,5 @@ SERVER_LINK=$(echo $MCMETADATA | jq ".url")
 echo "JAVA_VERSION=$JAVA_VERSION" > .env
 echo "IMAGE_NAME=$IMAGE_NAME" >> .env
 echo "SERVER_LINK=$SERVER_LINK" >> .env
-echo "MC_VERSION=$MC_VERSION" >> .env
+echo "MC_VERSION=${MC_VERSION// /_}" >> .env
 echo "USER=$USER" >> .env
