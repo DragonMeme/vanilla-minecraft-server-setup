@@ -55,7 +55,6 @@ There is a build stage where only the JRE environment is made without downloadin
 
 You can start up an instance by going to the existing `docker-compose.yaml` and change the following:
 - Change the `target` value in `build` from `minecraft-server` to `env-base`.
-- Change the `command` in `mc-server` to `sleep infinity` if you want to keep the environment up for testing purposes.
 - Place the server JAR file in this directory. Recommended to rename the JAR file to `server.jar`.
 - Uncomment the volume bind for the server JAR in the yaml file.
 - Run `make server [MC Version]` as usual.
