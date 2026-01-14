@@ -37,9 +37,13 @@ fi
 
 JAVA_VERSION=$(echo $MCMETADATA | awk -F"$CSV_SEP" '{print $3}')
 SERVER_LINK=$(echo $MCMETADATA | awk -F"$CSV_SEP" '{print $2}')
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
 
 echo "JAVA_VERSION=$JAVA_VERSION" > .env
 echo "IMAGE_NAME=$IMAGE_NAME" >> .env
 echo "SERVER_LINK=$SERVER_LINK" >> .env
 echo "MC_VERSION=${MC_VERSION// /_}" >> .env
 echo "USER=$USER" >> .env
+echo "GID=$GROUP_ID" >> .env
+echo "UID=$USER_ID" >> .env

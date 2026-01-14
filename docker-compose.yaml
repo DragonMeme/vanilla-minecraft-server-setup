@@ -4,11 +4,14 @@ services:
     pull_policy: never
     build:
       target: minecraft-server
+      dockerfile: scripts/Dockerfile.alpine
       args:
         - JAVA_VERSION=${JAVA_VERSION}
         - SERVER_LINK=${SERVER_LINK}
         - UNAME=${USER}
         - GNAME=${USER}
+        - UID=${UID}
+        - GID=${GID}
     stdin_open: true
     volumes:
       - ./out:/home/${USER}/
@@ -16,4 +19,5 @@ services:
     tty: true
     ports:
       - "25565:25565"
-    command: java -Xmx1024M -Xms1024M -jar /home/server.jar --nogui
+    entrypoint: java
+    command: -Xmx1024M -Xms1024M -jar /home/server.jar --nogui
